@@ -3,13 +3,6 @@ import { handleClickEl, handleSubmitProduct, obtenerProductos } from "../validat
 import { obtenerCategorias } from "../validation/Categories";
 import { Modal } from "../components/toast";
 
-interface Categoria {
-    id: number;
-    name: string;
-    element: string;
-    description: string;
-}
-
 function ProductAd() {
 
     const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +10,7 @@ function ProductAd() {
     const [name, setName] = useState("");
     const [categories, setCategories] = useState("");
     const [description, setDescription] = useState("");
-    const [linkVer, setLinkVer] = useState("");
+    const [price, setPrice] = useState(0);
     const [linkImagen, setLinkImagen] = useState("");
 
     const toggleModal = () => {
@@ -25,7 +18,7 @@ function ProductAd() {
         setName("");
         setCategories("");
         setDescription("");
-        setLinkVer("");
+        setPrice(0);
         setLinkImagen("");
     };
 
@@ -36,13 +29,13 @@ function ProductAd() {
             name,
             categories,
             description,
-            linkVer,
+            price,
             linkImagen,
             setId,
             setName,
             setCategories,
             setDescription,
-            setLinkVer,
+            setPrice,
             setLinkImagen
         );
     };
@@ -56,9 +49,8 @@ function ProductAd() {
 
     useEffect(() => {
         obtenerCategorias()
-            .then((data: Categoria[]) => {
-                const Filtradas = data.filter(fil => fil.element === "producto");
-                setCate(Filtradas);
+            .then((data) => {
+                setCate(data);
             })
             .catch((error) => {
                 console.error(error);
@@ -66,7 +58,7 @@ function ProductAd() {
     }, []);
 
     const [product, setProduct] = useState<
-        { id: number; name: string; categories: string; description: string, linkVer: string, linkImagen: string }[]
+        { id: number; name: string; categories: string; description: string, price: number, linkImagen: string }[]
     >([]);
 
     useEffect(() => {
@@ -84,14 +76,14 @@ function ProductAd() {
         name: string,
         categories: string,
         description: string,
-        linkVer: string,
+        price: number,
         linkImagen: string,
     ) => {
         setId(id);
         setName(name);
         setCategories(categories);
         setDescription(description);
-        setLinkVer(linkVer);
+        setPrice(price);
         setLinkImagen(linkImagen);
         toggleModalAct();
     };
@@ -105,16 +97,41 @@ function ProductAd() {
     const showModal = () => {
         setIsModalVisible(!isModalVisible);
     };
+
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredProducts = product.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.categories.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className=" bg-gray-900 p-4 border-2 border-gray-200 border-dashed rounded-lg mt-14 shadow-md">
             <div className="text-black text-2xl mb-4 p-4 rounded-lg shadow-lg bg-gray-200 flex items-center justify-between">
-                <p className="text-center">Productos</p>
-                <button
-                    className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-700 font-medium rounded-lg text-sm px-5 py-2.5" onClick={toggleModal}
-                >
-                    Agregar
-                </button>
+                <form className="w-full">
+                    <div className="relative w-full">
+                        <p className="text-center">Productos</p>
+                        <input
+                            type="search"
+                            id="default-search"
+                            className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Buscar"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)} 
+                            required
+                        />
+                        <button
+                            type="submit"
+                            className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2"
+                            onClick={toggleModal}
+                        >
+                            Agregar
+                        </button>
+                    </div>
+                </form>
             </div>
+
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <table className="w-full text-sm text-left text-gray-400">
                     <thead className="text-xs text-gray-400 uppercase bg-gray-700">
@@ -132,7 +149,7 @@ function ProductAd() {
                                 Descripción
                             </th>
                             <th scope="col" className="px-6 py-3">
-                                LinkVer
+                                Precio
                             </th>
                             <th scope="col" className="px-6 py-3">
                                 Acción
@@ -140,7 +157,7 @@ function ProductAd() {
                         </tr>
                     </thead>
                     <tbody>
-                        {product.map((product, index) => (
+                        {filteredProducts.map((product, index) => (
                             <tr
                                 key={index}
                                 className=" border-b bg-gray-900 border-gray-700"
@@ -159,7 +176,7 @@ function ProductAd() {
                                 </th>
                                 <td className="px-6 py-4">{product.categories}</td>
                                 <td className="px-6 py-4">{product.description.slice(0, 50)}...</td>
-                                <td className="px-6 py-4">{product.linkVer.slice(0, 50)}...</td>
+                                <td className="px-6 py-4">{product.price}</td>
                                 <td className="px-6 py-4">
                                     <a
                                         href="#"
@@ -170,7 +187,7 @@ function ProductAd() {
                                                 product.name,
                                                 product.categories,
                                                 product.description,
-                                                product.linkVer,
+                                                product.price,
                                                 product.linkImagen
                                             )
                                         }
@@ -294,18 +311,19 @@ function ProductAd() {
 
                                     <div>
                                         <label className="block mb-2 text-sm font-medium text-white">
-                                            Ver
+                                            Precio
                                         </label>
                                         <div className="relative">
                                             <input
                                                 type="text"
                                                 className="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
-                                                placeholder="Link de ver"
-                                                value={linkVer}
-                                                onChange={(e) => setLinkVer(e.target.value)}
+                                                placeholder="Nombre del producto"
+                                                value={price}
+                                                onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
                                             />
                                         </div>
                                     </div>
+
 
                                     <div>
                                         <label className="block mb-2 text-sm font-medium text-white">

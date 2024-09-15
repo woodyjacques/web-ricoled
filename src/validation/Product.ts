@@ -10,13 +10,13 @@ export const handleSubmitProduct = async (
     name: string,
     categories: string,
     description: string,
-    linkVer: string,
+    price:number,
     linkImagen: string,
     setId: React.Dispatch<React.SetStateAction<number>>,
     setName: React.Dispatch<React.SetStateAction<string>>,
     setCategories: React.Dispatch<React.SetStateAction<string>>,
     setDescription: React.Dispatch<React.SetStateAction<string>>,
-    setLinkVer: React.Dispatch<React.SetStateAction<string>>,
+    setPrice: React.Dispatch<React.SetStateAction<number>>,
     setLinkImagen: React.Dispatch<React.SetStateAction<string>>
 ) => {
     event.preventDefault();
@@ -38,8 +38,8 @@ export const handleSubmitProduct = async (
         return null;
     }
 
-    if (linkVer === "") {
-        mostrarMensaje("Ingrese el link ver", MensajeErr);
+    if (price === 0) {
+        mostrarMensaje("Ingrese el precio", MensajeErr);
         return null;
     }
 
@@ -53,14 +53,14 @@ export const handleSubmitProduct = async (
         setName("");
         setCategories("");
         setDescription("");
-        setLinkVer("");
+        setPrice(0);
         setLinkImagen("");
     }
 
     try {
         const method = id === 0 ? 'post' : 'patch';
         const url = id === 0 ? `${api}/product` : `${api}/product/${id}`;
-        const response = await axios[method](url, { name, description, categories, linkVer,  linkImagen }, {
+        const response = await axios[method](url, { name, description, price, categories,  linkImagen }, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
