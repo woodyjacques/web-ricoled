@@ -3,10 +3,11 @@ import { handleClickEl, handleSubmitProduct, obtenerProductos } from "../validat
 import { obtenerCategorias } from "../validation/Categories";
 import { Modal } from "../components/toast";
 
-function ProductAd() {
+function Product() {
 
     const [isOpen, setIsOpen] = useState(false);
     const [id, setId] = useState(0);
+    const [code, setCode] = useState("");
     const [name, setName] = useState("");
     const [categories, setCategories] = useState("");
     const [description, setDescription] = useState("");
@@ -15,6 +16,7 @@ function ProductAd() {
 
     const toggleModal = () => {
         setIsOpen(!isOpen);
+        setCode("");
         setName("");
         setCategories("");
         setDescription("");
@@ -26,12 +28,14 @@ function ProductAd() {
         handleSubmitProduct(
             event,
             id,
+            code,
             name,
             categories,
             description,
             price,
             linkImagen,
             setId,
+            setCode,
             setName,
             setCategories,
             setDescription,
@@ -58,7 +62,7 @@ function ProductAd() {
     }, []);
 
     const [product, setProduct] = useState<
-        { id: number; name: string; categories: string; description: string, price: number, linkImagen: string }[]
+        { id: number; code: string; name: string; categories: string; description: string, price: number, linkImagen: string }[]
     >([]);
 
     useEffect(() => {
@@ -73,6 +77,7 @@ function ProductAd() {
 
     const handleActualizar = (
         id: number,
+        code: string,
         name: string,
         categories: string,
         description: string,
@@ -80,6 +85,7 @@ function ProductAd() {
         linkImagen: string,
     ) => {
         setId(id);
+        setCode(code);
         setName(name);
         setCategories(categories);
         setDescription(description);
@@ -101,10 +107,26 @@ function ProductAd() {
     const [searchTerm, setSearchTerm] = useState("");
 
     const filteredProducts = product.filter((product) =>
+        product.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.categories.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const [productIdToDelete, setProductIdToDelete] = useState<number | null>(null);
+
+    const handleEliminarClick = (id: number) => {
+        setProductIdToDelete(id);
+        showModal();
+    };
+
+    const handleConfirmEliminar = () => {
+        if (productIdToDelete !== null) {
+            handleClickEl({ id: productIdToDelete });
+            setProductIdToDelete(null);
+        }
+        showModal();
+    };
 
     return (
         <div className=" bg-gray-900 p-4 border-2 border-gray-200 border-dashed rounded-lg mt-14 shadow-md">
@@ -118,7 +140,7 @@ function ProductAd() {
                             className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Buscar"
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)} 
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             required
                         />
                         <button
@@ -137,7 +159,7 @@ function ProductAd() {
                     <thead className="text-xs text-gray-400 uppercase bg-gray-700">
                         <tr>
                             <th scope="col" className="px-6 py-3">
-                                Imagen
+                                Código
                             </th>
                             <th scope="col" className="px-6 py-3">
                                 Nombre
@@ -164,9 +186,9 @@ function ProductAd() {
                             >
                                 <th
                                     scope="row"
-                                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                    className="px-6 py-4 font-medium whitespace-nowrap text-white"
                                 >
-                                    <img className="h-12 w-18 rounded-md" src={product.linkImagen} alt="" />
+                                    {product.code}
                                 </th>
                                 <th
                                     scope="row"
@@ -175,7 +197,9 @@ function ProductAd() {
                                     {product.name}
                                 </th>
                                 <td className="px-6 py-4">{product.categories}</td>
-                                <td className="px-6 py-4">{product.description.slice(0, 50)}...</td>
+                                <td className="px-6 py-4">
+                                    {product.description ? product.description.slice(0, 50) : "Sin descripción"}...
+                                </td>
                                 <td className="px-6 py-4">{product.price}</td>
                                 <td className="px-6 py-4">
                                     <a
@@ -184,6 +208,7 @@ function ProductAd() {
                                         onClick={() =>
                                             handleActualizar(
                                                 product.id,
+                                                product.code,
                                                 product.name,
                                                 product.categories,
                                                 product.description,
@@ -194,17 +219,15 @@ function ProductAd() {
                                     >
                                         Actualizar
                                     </a>
-                                    <a href="#"
-                                        onClick={showModal}
+                                    <a
+                                        href="#"
                                         className="ml-8 font-medium text-red-500 hover:underline"
+                                        onClick={() => handleEliminarClick(product.id)}
                                     >
                                         Eliminar
                                     </a>
                                     <Modal
-                                        onConfirm={() => {
-                                            handleClickEl(product);
-                                            showModal();
-                                        }}
+                                        onConfirm={handleConfirmEliminar}
                                         isVisible={isModalVisible}
                                         onClose={showModal}
                                         message="¿Estás seguro de eliminar el producto?"
@@ -260,6 +283,21 @@ function ProductAd() {
                                     className=" hidden text-green-500 text-sm font-medium rounded-lg text-center"
                                 ></p>
                                 <form className="space-y-6" onSubmit={handleSubmit}>
+
+                                    <div>
+                                        <label className="block mb-2 text-sm font-medium text-white">
+                                            Código
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                type="text"
+                                                className="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                                                placeholder="Nombre del producto"
+                                                value={code}
+                                                onChange={(e) => setCode(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
 
                                     <div>
                                         <label className="block mb-2 text-sm font-medium text-white">
@@ -357,5 +395,5 @@ function ProductAd() {
     );
 }
 
-export default ProductAd;
+export default Product;
 

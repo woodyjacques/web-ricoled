@@ -42,7 +42,7 @@ function Adminstrador() {
                             <Link to="/woody-users-administrador" className="flex ml-2 md:mr-24">
                                 <img
                                     src={ricoled}
-                                    className="h-8 mr-3"
+                                    className="h-8 mr-3 rounded-full"
                                     alt="FlowBite Logo"
                                 />
                                 <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">
@@ -65,7 +65,23 @@ function Adminstrador() {
                     <ul className="space-y-2 font-medium">
                         <li>
                             <NavLink
-                                to="/"
+                                to="/obtener"
+                                className={`flex items-center p-2 text-white rounded-lg hover:bg-gray-800 `}
+                                onClick={toggleAside}
+                            ><span className="flex-1 ml-3 whitespace-nowrap">Obtener</span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to="/ingresar"
+                                className={`flex items-center p-2 text-white rounded-lg hover:bg-gray-800 `}
+                                onClick={toggleAside}
+                            ><span className="flex-1 ml-3 whitespace-nowrap">Ingresar</span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to="/productos"
                                 className={`flex items-center p-2 text-white rounded-lg hover:bg-gray-800 `}
                                 onClick={toggleAside}
                             ><span className="flex-1 ml-3 whitespace-nowrap">Productos</span>

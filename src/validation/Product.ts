@@ -2,17 +2,18 @@ import { FormEvent } from "react";
 import { mostrarMensaje } from "../components/toast";
 import axios from "axios";
 const api = "https://bac-ricoled.vercel.app";
-const token = localStorage.getItem("ACCESS_TOKEN");
 
 export const handleSubmitProduct = async (
     event: FormEvent,
     id: number,
+    code:string,
     name: string,
     categories: string,
     description: string,
     price:number,
     linkImagen: string,
     setId: React.Dispatch<React.SetStateAction<number>>,
+    setCode: React.Dispatch<React.SetStateAction<string>>,
     setName: React.Dispatch<React.SetStateAction<string>>,
     setCategories: React.Dispatch<React.SetStateAction<string>>,
     setDescription: React.Dispatch<React.SetStateAction<string>>,
@@ -23,13 +24,13 @@ export const handleSubmitProduct = async (
     const MensajeErr = document.getElementById("MensajeErrServ");
     const MensajeAct = document.getElementById("MensajeServ");
 
-    if (name === "") {
-        mostrarMensaje("Ingrese el nombre", MensajeErr);
+    if (code === "") {
+        mostrarMensaje("Ingrese el código", MensajeErr);
         return null;
     }
 
-    if (categories === "") {
-        mostrarMensaje("Ingrese la categoria", MensajeErr);
+    if (name === "") {
+        mostrarMensaje("Ingrese el nombre", MensajeErr);
         return null;
     }
 
@@ -43,13 +44,9 @@ export const handleSubmitProduct = async (
         return null;
     }
 
-    if (linkImagen === "") {
-        mostrarMensaje("Ingrese el link imagen", MensajeErr);
-        return null;
-    }
-
     function resetForm() {
         setId(0);
+        setCode("");
         setName("");
         setCategories("");
         setDescription("");
@@ -60,11 +57,7 @@ export const handleSubmitProduct = async (
     try {
         const method = id === 0 ? 'post' : 'patch';
         const url = id === 0 ? `${api}/product` : `${api}/product/${id}`;
-        const response = await axios[method](url, { name, description, price, categories,  linkImagen }, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await axios[method](url, { code, name, description, price, categories,  linkImagen });
         resetForm();
         window.location.reload();
         mostrarMensaje(response.data.message, MensajeAct);
@@ -88,11 +81,7 @@ export function handleClickEl(product: any) {
     const MensajeNegToast = document.getElementById("toast-negative");
   
     axios
-      .delete(`${api}/product/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .delete(`${api}/product/${id}`)
       .then((response) => {
         console.log(response);
         window.location.reload();
