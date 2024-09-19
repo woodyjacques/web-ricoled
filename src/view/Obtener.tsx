@@ -4,7 +4,7 @@ import { ModalCard } from "../components/modalCard";
 
 function Obtener() {
     const [product, setProduct] = useState<
-        { id: number; code: string; name: string; categories: string; description: string, price: number, linkImagen: string }[]
+        { id: number; code: string; categories: string; description: string, price: number, linkImagen: string }[]
     >([]);
 
     useEffect(() => {
@@ -21,23 +21,58 @@ function Obtener() {
     const [selectedPriceOption, setSelectedPriceOption] = useState<number>(1);
 
     const filteredProducts = product.filter((product) =>
-        product.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.categories.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+        (product.code?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+        (product.categories?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+        (product.description?.toLowerCase() || "").includes(searchTerm.toLowerCase())
     );
 
     const calculatePrice = (price: number) => {
         let adjustment = 0;
         switch (selectedPriceOption) {
             case 1:
-                adjustment = price * 0.10;
+                adjustment = price * 0.05;
                 break;
             case 2:
-                adjustment = price * 0.20;
+                adjustment = price * 0.10;
                 break;
             case 3:
+                adjustment = price * 0.15;
+                break;
+            case 4:
+                adjustment = price * 0.20;
+                break;
+            case 5:
+                adjustment = price * 0.25;
+                break;
+            case 6:
                 adjustment = price * 0.30;
+                break;
+            case 7:
+                adjustment = price * 0.35;
+                break;
+            case 8:
+                adjustment = price * 0.40;
+                break;
+            case 9:
+                adjustment = price * 0.45;
+                break;
+            case 10:
+                adjustment = price * 0.50;
+                break;
+            case 11:
+                adjustment = price * 0.55;
+                break;
+            case 12:
+                adjustment = price * 0.60;
+                break;
+            case 13:
+                adjustment = price * 0.65;
+                break;
+            case 14:
+                adjustment = price * 0.70;
+                break;
+            case 15:
+                adjustment = price * 0.75;
                 break;
             default:
                 adjustment = 0;
@@ -50,11 +85,11 @@ function Obtener() {
 
     const toggleModal = () => {
         setIsOpen(!isOpen);
-      };
+    };
 
-      const obtener = (offer: any) => {
+    const obtener = (offer: any) => {
         setarticulos(offer);
-      };
+    };
 
     return (
         <div className=" bg-gray-900 p-4 border-2 border-gray-200 border-dashed rounded-lg mt-14 shadow-md">
@@ -81,6 +116,18 @@ function Obtener() {
                             <option value="1">5</option>
                             <option value="2">10</option>
                             <option value="3">15</option>
+                            <option value="4">20</option>
+                            <option value="5">25</option>
+                            <option value="6">30</option>
+                            <option value="7">35</option>
+                            <option value="8">40</option>
+                            <option value="9">45</option>
+                            <option value="10">50</option>
+                            <option value="11">55</option>
+                            <option value="12">60</option>
+                            <option value="13">65</option>
+                            <option value="14">70</option>
+                            <option value="15">75</option>
                         </select>
                     </div>
                 </form>
@@ -91,8 +138,8 @@ function Obtener() {
                     <thead className="text-xs text-gray-400 uppercase bg-gray-700">
                         <tr>
                             <th scope="col" className="px-6 py-3">Imagen</th>
+                            <th scope="col" className="px-6 py-3">Categoría</th>
                             <th scope="col" className="px-6 py-3">Código</th>
-                            <th scope="col" className="px-6 py-3">Nombre</th>
                             <th scope="col" className="px-6 py-3">Descripción</th>
                             <th scope="col" className="px-6 py-3">Precio</th>
                         </tr>
@@ -101,29 +148,33 @@ function Obtener() {
                         {filteredProducts.map((product, index) => (
                             <tr key={index} className="border-b bg-gray-900 border-gray-700">
                                 <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    <img className="h-12 w-18 rounded-md" src={product.linkImagen} alt="" onClick={() => {
-                                        toggleModal();
-                                        obtener(product);
-                                    }} />
+                                    {product.linkImagen ? (
+                                        <img className="h-12 w-18 rounded-md" src={product.linkImagen} alt="" onClick={() => {
+                                            toggleModal();
+                                            obtener(product);
+                                        }} />
+                                    ) : (
+                                        <span>Sin imagen</span>
+                                    )}
                                 </th>
                                 <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap text-white">
-                                    {product.code}
+                                    {product.categories ? product.categories : "Sin categoría"}
                                 </th>
                                 <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap text-white">
-                                    {product.name}
+                                    {product.code ? product.code : "Sin código"}
                                 </th>
                                 <td className="px-6 py-4">
-                                    {product.description ? product.description.slice(0, 50) : "Sin descripción"}...
+                                    {product.description ? product.description : "Sin descripción"}
                                 </td>
                                 <td className="px-6 py-4">
-                                    {calculatePrice(product.price).toFixed(2)}
+                                    {product.price.toLocaleString() ? calculatePrice(product.price).toFixed(2) : "Sin precio"}
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-            <ModalCard set={articulo} isOpen={isOpen} toggleModal={toggleModal} />
+            <ModalCard set={articulo} isOpen1={isOpen} toggleModal1={toggleModal} />
         </div>
     );
 }

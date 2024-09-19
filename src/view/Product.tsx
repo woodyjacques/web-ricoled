@@ -2,13 +2,13 @@ import { FormEvent, useEffect, useState } from "react";
 import { handleClickEl, handleSubmitProduct, obtenerProductos } from "../validation/Product";
 import { obtenerCategorias } from "../validation/Categories";
 import { Modal } from "../components/toast";
+import { ModalCard } from "../components/modalCard";
 
 function Product() {
 
     const [isOpen, setIsOpen] = useState(false);
     const [id, setId] = useState(0);
     const [code, setCode] = useState("");
-    const [name, setName] = useState("");
     const [categories, setCategories] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState(0);
@@ -17,7 +17,6 @@ function Product() {
     const toggleModal = () => {
         setIsOpen(!isOpen);
         setCode("");
-        setName("");
         setCategories("");
         setDescription("");
         setPrice(0);
@@ -29,14 +28,12 @@ function Product() {
             event,
             id,
             code,
-            name,
             categories,
             description,
             price,
             linkImagen,
             setId,
             setCode,
-            setName,
             setCategories,
             setDescription,
             setPrice,
@@ -62,7 +59,7 @@ function Product() {
     }, []);
 
     const [product, setProduct] = useState<
-        { id: number; code: string; name: string; categories: string; description: string, price: number, linkImagen: string }[]
+        { id: number; code: string; categories: string; description: string, price: number, linkImagen: string }[]
     >([]);
 
     useEffect(() => {
@@ -78,7 +75,6 @@ function Product() {
     const handleActualizar = (
         id: number,
         code: string,
-        name: string,
         categories: string,
         description: string,
         price: number,
@@ -86,7 +82,6 @@ function Product() {
     ) => {
         setId(id);
         setCode(code);
-        setName(name);
         setCategories(categories);
         setDescription(description);
         setPrice(price);
@@ -107,10 +102,9 @@ function Product() {
     const [searchTerm, setSearchTerm] = useState("");
 
     const filteredProducts = product.filter((product) =>
-        product.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.categories.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+        (product.code?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+        (product.categories?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+        (product.description?.toLowerCase() || "").includes(searchTerm.toLowerCase())
     );
 
     const [productIdToDelete, setProductIdToDelete] = useState<number | null>(null);
@@ -126,6 +120,17 @@ function Product() {
             setProductIdToDelete(null);
         }
         showModal();
+    };
+
+    const [isOpen1, setIsOpen1] = useState(false);
+    const [articulo, setarticulos] = useState();
+
+    const toggleModal1 = () => {
+        setIsOpen1(!isOpen1);
+    };
+
+    const obtener = (offer: any) => {
+        setarticulos(offer);
     };
 
     return (
@@ -159,13 +164,13 @@ function Product() {
                     <thead className="text-xs text-gray-400 uppercase bg-gray-700">
                         <tr>
                             <th scope="col" className="px-6 py-3">
-                                Código
-                            </th>
-                            <th scope="col" className="px-6 py-3">
-                                Nombre
+                                Imagen
                             </th>
                             <th scope="col" className="px-6 py-3">
                                 Categoría
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Código
                             </th>
                             <th scope="col" className="px-6 py-3">
                                 Descripción
@@ -184,23 +189,28 @@ function Product() {
                                 key={index}
                                 className=" border-b bg-gray-900 border-gray-700"
                             >
-                                <th
-                                    scope="row"
-                                    className="px-6 py-4 font-medium whitespace-nowrap text-white"
-                                >
-                                    {product.code}
+                                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {product.linkImagen ? (
+                                        <img className="h-12 w-18 rounded-md" src={product.linkImagen} alt="" onClick={() => {
+                                            toggleModal1();
+                                            obtener(product);
+                                        }} />
+                                    ) : (
+                                        <span>Sin imagen</span>
+                                    )}
                                 </th>
-                                <th
-                                    scope="row"
-                                    className="px-6 py-4 font-medium whitespace-nowrap text-white"
-                                >
-                                    {product.name}
+                                <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap text-white">
+                                    {product.categories ? product.categories : "Sin categoría"}
                                 </th>
-                                <td className="px-6 py-4">{product.categories}</td>
+                                <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap text-white">
+                                    {product.code ? product.code : "Sin código"}
+                                </th>
                                 <td className="px-6 py-4">
-                                    {product.description ? product.description.slice(0, 50) : "Sin descripción"}...
+                                    {product.description ? product.description : "Sin descripción"}
                                 </td>
-                                <td className="px-6 py-4">{product.price}</td>
+                                <td className="px-6 py-4">
+                                    {product.price ? product.price.toLocaleString() : "Sin precio"}
+                                </td>
                                 <td className="px-6 py-4">
                                     <a
                                         href="#"
@@ -209,7 +219,6 @@ function Product() {
                                             handleActualizar(
                                                 product.id,
                                                 product.code,
-                                                product.name,
                                                 product.categories,
                                                 product.description,
                                                 product.price,
@@ -301,21 +310,6 @@ function Product() {
 
                                     <div>
                                         <label className="block mb-2 text-sm font-medium text-white">
-                                            Nombre
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type="text"
-                                                className="bg-gray-600 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
-                                                placeholder="Nombre del producto"
-                                                value={name}
-                                                onChange={(e) => setName(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block mb-2 text-sm font-medium text-white">
                                             Categorías
                                         </label>
                                         <div className="relative">
@@ -391,6 +385,7 @@ function Product() {
                     </div>
                 </div>
             )}
+            <ModalCard set={articulo} isOpen1={isOpen1} toggleModal1={toggleModal1} />
         </div>
     );
 }

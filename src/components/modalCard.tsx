@@ -1,15 +1,15 @@
 interface Forms {
-    isOpen: boolean;
+    isOpen1: boolean;
     set: any;  // Manteniendo el tipo como 'any' para mayor flexibilidad
-    toggleModal: () => void;
+    toggleModal1: () => void;
 }
 
-export function ModalCard({ isOpen, toggleModal, set }: Forms) {
-    if (!isOpen) {
+export function ModalCard({ isOpen1, toggleModal1, set }: Forms) {
+    if (!isOpen1) {
         return null;
     }
 
-    console.log(set.linkImagen); // Mostramos 'set.linkImagen' tal como lo pasaste
+    console.log(set.linkImagen); 
 
     return (
         <div
@@ -25,7 +25,7 @@ export function ModalCard({ isOpen, toggleModal, set }: Forms) {
                             type="button"
                             className="text-gray-400 bg-transparent rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
                             data-modal-hide="staticModal"
-                            onClick={toggleModal}
+                            onClick={toggleModal1}
                         >
                             <svg
                                 className="w-3 h-3"

@@ -7,14 +7,12 @@ export const handleSubmitProduct = async (
     event: FormEvent,
     id: number,
     code:string,
-    name: string,
     categories: string,
     description: string,
     price:number,
     linkImagen: string,
     setId: React.Dispatch<React.SetStateAction<number>>,
     setCode: React.Dispatch<React.SetStateAction<string>>,
-    setName: React.Dispatch<React.SetStateAction<string>>,
     setCategories: React.Dispatch<React.SetStateAction<string>>,
     setDescription: React.Dispatch<React.SetStateAction<string>>,
     setPrice: React.Dispatch<React.SetStateAction<number>>,
@@ -26,11 +24,6 @@ export const handleSubmitProduct = async (
 
     if (code === "") {
         mostrarMensaje("Ingrese el código", MensajeErr);
-        return null;
-    }
-
-    if (name === "") {
-        mostrarMensaje("Ingrese el nombre", MensajeErr);
         return null;
     }
 
@@ -47,7 +40,6 @@ export const handleSubmitProduct = async (
     function resetForm() {
         setId(0);
         setCode("");
-        setName("");
         setCategories("");
         setDescription("");
         setPrice(0);
@@ -57,7 +49,7 @@ export const handleSubmitProduct = async (
     try {
         const method = id === 0 ? 'post' : 'patch';
         const url = id === 0 ? `${api}/product` : `${api}/product/${id}`;
-        const response = await axios[method](url, { code, name, description, price, categories,  linkImagen });
+        const response = await axios[method](url, { code, description, price, categories,  linkImagen });
         resetForm();
         window.location.reload();
         mostrarMensaje(response.data.message, MensajeAct);

@@ -25,15 +25,14 @@ function Ingresar() {
                 const lines = fileContent.split("\n");
 
                 for (const line of lines) {
-                    const [code, name, categories, description, price, linkImagen] = line.split(",");
+                    const [linkImagen,  categories, code, description, price] = line.split(",");
 
                     const product = {
-                        code,
-                        name,
-                        categories,
-                        description,
-                        price,
                         linkImagen,
+                        categories,
+                        code,
+                        description,
+                        price
                     };
 
                     const MensajeErr = document.getElementById("MensajeErrServ");
