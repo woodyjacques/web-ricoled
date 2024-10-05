@@ -167,7 +167,7 @@ function Obtener() {
                                     {product.description ? product.description : "Sin descripción"}
                                 </td>
                                 <td className="px-6 py-4">
-                                    {product.price.toLocaleString() ? calculatePrice(product.price).toFixed(2) : "Sin precio"}
+                                    {product.price != null ? calculatePrice(product.price).toFixed(2) : "Sin precio"}
                                 </td>
                             </tr>
                         ))}
